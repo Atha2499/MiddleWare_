@@ -1,0 +1,562 @@
+
+<!doctype html>
+<html lang="en">
+    <style>
+        /* Add space below the first div */
+        div {
+            margin-bottom: 20px; /* Adjust spacing as needed */
+        }
+
+        /* Optional: Add spacing between inputs and labels */
+        label {
+            display: block; /* Makes label appear above input */
+            margin-bottom: 5px; /* Space between label and input */
+        }
+        .table-container {
+    max-width:100%;  /* Prevents it from going too wide */
+    overflow-x: auto; /* Enables scrolling if it overflows */
+    margin-bottom: 15px; /* Adds space between table and accordion */
+}
+
+
+        /* Optional: Style the input fields */
+        
+    </style>
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+
+    <title>Hello, world!</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.4.1/socket.io.js"></script>
+
+  </head>
+  <body>
+    <!-- <h1>Hello, world!</h1> -->
+     
+       
+        <div class="text-left">
+          <h4 align="right">Device Name:- {{devicename}}</h4>
+          <div class="table-container">
+          <table border="1" align ="right">
+            <tr>
+                <th>Name</th>
+                <th>IP Address</th>
+            </tr>
+            {% for network in networks %}
+            <tr>
+                <td>{{ network.name }}</td>
+                <td>{{ network.ip }}</td>
+            </tr>
+            {% endfor %}
+                </table>
+                <div class="table-container"></div>
+            <img src="{{ url_for('static', filename='images/TEJ.jpeg') }}" class="rounded" alt="...">
+            <H2>TEJ Control Systems PVT LTD</H2>
+           <h1>
+
+
+           </h1>
+          </div>
+         </div>
+    
+    <div class="accordion" id="accordionExample" >
+        <div class="accordion-item">
+          <h2 class="accordion-header" id="headingOne">
+            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                <h2>IP settings</h2>
+            </button>
+          </h2>
+          <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
+            <div class="accordion-body">
+           
+        <form method="POST">
+        <!-- <div>
+            <label> Enter Name of Interface</label>
+            <input type="text" id="int" name="Interface" required>
+            
+        </div> -->
+<table cellpadding="3" >
+<tr border=10 >
+<th style="padding: 10px;">Port Name</th>
+<th style="padding: 10px;"> IP </th>
+<th> </th>
+</tr>
+        {% for network in networks %}
+<tr>       
+ <div>
+      <td>
+      <label id="label_{{loop.index}}" for="network_{{ loop.index }}" name="Interface">{{ network.name }}</label>
+</td>
+<td>
+            <input id="textbox_{{loop.index}}" type="text" id="network_{{ loop.index }}" name="ip_address" value="{{ network.ip }}" required></td>
+            <td>
+            <button type="submit" onclick="Submit({{loop.index}})">Save</button></td>
+        </div>
+        {% endfor %}
+</table>
+        <!-- <label for="ip">Enter New IP Address:</label>
+        <input type="text" id="ip" name="ip_address" required> -->
+        <div>
+        <script>
+          function Submit(i){
+            let ipInput = document.getElementById("textbox_" + i);
+        let IP = ipInput.value;
+
+        // Get the interface name from the label
+        let interfaceLabel = document.getElementById("label_" + i);
+        let interfaceName = interfaceLabel.textContent || interfaceLabel.innerText;
+
+        // Display values in console
+        console.log("Interface:", interfaceName);
+        console.log("New IP Address:", IP);
+
+        // Optional: Send data to backend
+        fetch('/update_ip', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                interface: interfaceName,
+                ip_address: IP
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log("Server Response:", data);
+        })
+        .catch(error => console.error("Error:", error));
+          }
+        </script>
+        <a href="/About">
+            <button type="button">About</button>
+        </a>
+        </div>
+         </form>
+ 
+            </div>
+          </div>
+        </div>
+
+
+        <div class="accordion-item">
+          <h2 class="accordion-header" id="headingTwo">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+             <h2>Protocol Settings</h2> 
+            </button>
+          </h2>
+          <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
+            <div class="accordion-body">
+              <form method="POST">
+                <!-- <div>
+                    <label> Enter Name of Interface</label>
+                    <input type="text" id="int" name="Interface" required>
+                    
+                </div> -->
+        <table cellpadding="3">
+        <tr>
+        <th style="padding: 10px;">Ethernet Interface</th>
+        <th style="padding: 10px;"> IP Address </th>
+        <th style="padding: 10px;"> Port </th>
+        <th style="padding: 10px;"> Protocol </th>
+        <th style="padding: 10px;"> Act this device as </th>
+        <th style="padding: 10px;"> </th>
+        <th style="padding: 10px;"> </th>
+        
+        <th> </th>
+        </tr>
+                
+        <tr>       
+         <div>
+              <td border="1">
+                <select id="deviceDropdown" style="width: 200px;" onchange="fetchDeviceInfo()" required>
+                  <option value="">Select a Device</option>
+                  {% for network in networks %}
+                  <option>{{ network.name }}</option>
+                  {% endfor %}
+                </select>
+             </td>
+          <td border="1">
+            <label id="IPaddr"></label>
+          </td>
+          <td border="1">
+            <input id="Port" size="5" required />
+          </td>
+          <td border="1">
+            <select id="protocoldropdown" onchange="" required>
+              <option value="">Select a Device</option>
+              
+              <option>TCP/IP</option>
+              <option>MQTT</option>
+      
+            </select>
+         </td>
+         <td border="1">
+          <select id="actas" onchange="" required>
+            <option value="">Select a Device</option>
+            
+            <option>Server</option>
+            <option>Client</option>
+    
+          </select>
+       </td>
+       <td>
+        <button onclick="protocol(event)"> Save</button>
+       </td>
+       <td>
+        <h4>
+          <Label id="notif" ></Label>
+        </h4>       
+       </td>
+         
+                </div>
+        </tr>
+               
+          </table>
+                
+                <div>
+                 <script>
+                 function fetchDeviceInfo() {
+try{
+event.preventDefault(); 
+        let device = document.getElementById("deviceDropdown").value;
+        
+        if (device) {
+    fetch(`/get_device_info?device=${device}`)
+        .then(response => response.json())
+        .then(data => {
+            // Set values in different labels
+        
+	console.log("data in html "+data);   
+	 document.getElementById("IPaddr").textContent = data;
+            
+        })
+        .catch(error => console.error("Error fetching data:", error));
+} else {
+    // Clear labels if no device is selected
+    document.getElementById("IPaddr").textContent = "None";
+}
+    }catch(error){console.error(error);}
+}
+                function protocol(event)
+                {event.preventDefault(); 
+                  let protocol = document.getElementById("protocoldropdown").value; 
+                  let ip=document.getElementById("IPaddr").textContent;
+                  let Port=document.getElementById("Port").value
+                  let actas=document.getElementById("actas").value;
+                let protocolid=0;
+                let actasid;
+                  if(protocol=="TCP/IP")
+                  {
+                    protocolid=0;
+                    
+                  }else if(protocol=="MQTT"){
+                    protocolid=1;
+                  }
+                  if(actas="Server"){
+                    actasid=0;
+                  }else if(actas="Client"){
+                    actasid=1;
+                  }
+                    fetch(`/setprotocol?protocol=${protocolid}&Ip=${ip}&port=${Port}&actas=${actasid}`)
+        .then(response => response.json())
+        .then(data => {
+            // Set values in different labels
+           document.getElementById("notif").textContent = data.message;
+           document.getElementById("notif").style.color = "green";
+            
+        })
+        .catch(error => console.error("Error fetching data:", error));
+                 
+
+                }
+                
+        
+</script> 
+                
+                </div>
+                 </form>
+            </div>
+          </div>
+        </div>
+
+
+        <div class="accordion-item">
+          <h2 class="accordion-header" id="headingThree">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+             <h2>Data Frame Settings</h2>
+            </button>
+          </h2>
+          <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#accordionExample">
+            <div class="accordion-body">
+              <form method="POST">
+                <!-- <div>
+                    <label> Enter Name of Interface</label>
+                    <input type="text" id="int" name="Interface" required>
+                    
+                </div> -->
+        <table cellpadding="3">
+        <tr>
+          
+        <th style="padding: 10px;"><h5>Interface Control</h5> </th>
+        <th style="padding: 10px;"><h5> Connection Status </h5></th>
+        <th style="padding: 10px;"><h5> Data Response</h5> </th>
+        <th style="padding: 10px;"><h5> Data Seprator </h5></th>
+        <th style="padding: 10px;"><h5> Data Alias </h5></th>
+        <th style="padding: 10px;"><h5> </h5></th>
+        <th style="padding: 10px;"><h5>Data Alias </h5></th>
+        
+        <th> </th>
+        </tr>
+                
+        <tr>       
+         <div>
+       <td>
+       
+        <button type="button" onclick="start(event)">Open Communication</button>
+             
+       </td>
+       
+       <td>
+
+        <h5>
+          <label id="connlbl"></label>
+        </h5>
+       </td>
+       <td>
+        <h5>
+          <label id="datalbl"></label>
+        </h5>
+       </td>
+       <td>
+        <input id="seprator" size="2" required /> 
+       </td>
+       <td>
+        <input id="aliastxtbx" size="10" required /> 
+       </td>
+       <td>
+        <button id="savebtn" type="button" onclick="savealias(event)">Save</button> 
+       </td>
+       </td>
+       <td>
+        <label id="dlbl"></label>
+        <!-- <table id="myTable">
+          <thead>
+              
+          </thead>
+          <tbody>
+              <!-- Rows will be added here -->
+          <!-- </tbody>
+      </table> --> 
+       </td>
+       <tr>
+        <td>
+        <button id="getbtn" type="button"  onclick="startMessageUpdate(event)">Check Data Recived</button>
+    </td>
+          </tr>
+          <tr>
+            <td>
+              <h4>
+                <label id="notify"></label>
+              </h4>
+            </td>
+          </tr>
+        </tr>
+      
+               
+          </table>
+                
+                <div>
+                 <script>
+              function start(event)
+                {
+                  event.preventDefault(); 
+                  fetch(`/start`)
+        .then(response => response.json()).then(data => {
+          document.getElementById("notify").textContent = data.message;
+          document.getElementById("notify").style.color = "green";
+        })}
+
+        function startMessageUpdate(event)
+         {
+          
+          event.preventDefault(); 
+          fetch(`/get_message`)
+          .then(response => response.json())
+          .then(data => {
+              if (data.message) 
+              {  // Only update if there's a new message
+                  document.getElementById("datalbl").textContent = data.message;
+              }
+          })
+          .catch(error => console.error("Error fetching message:", error));
+      // Poll every 2 seconds
+    }
+    function savealias(event)
+    { event.preventDefault(); 
+      let seprator = document.getElementById("seprator").value; 
+      let Alias=document.getElementById("aliastxtbx").value;
+      let data=document.getElementById("datalbl").textContent;
+      //let lbl=document.getElementById("dlbl").textContent;
+      
+
+      fetch(`/savealias?seprator=${seprator}&alias=${Alias}&data=${data}`)
+          .then(response => response.json())
+          .then(data => {
+            document.getElementById("dlbl").textContent=data.Result;
+              // if (data.Result=="No of alias does'nt match no of data") 
+              // {  
+              //   generateTable(1,data.Result,"=",false);
+              // }else{
+                
+              //   generateTable(data.length,data,"=",true);
+              // }
+          })
+          .catch(error => console.error("Error fetching message:", error));
+      // Poll every 2 seconds
+
+    }
+    
+    var socket = io();
+    socket.on("update_label", function(data) {
+            document.getElementById("datalbl").textContent = data.message;
+        });
+        var socket =io();
+        socket.on("update_status",function (data){
+          document.getElementById("connlbl").textContent = data.Status;
+        })
+        
+
+            // Set values in different labels
+           // document.getElementById("IPaddr").textContent = data.ip;
+            
+                
+        
+</script> 
+                
+                </div> 
+              </form>
+            </div>
+          </div>
+        </div>
+
+        <div class="accordion-item">
+          <h2 class="accordion-header" id="headingFour">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
+              <h2>Data Visualization</h2>
+            </button>
+          </h2>
+          <div id="collapseFour" class="accordion-collapse collapse" aria-labelledby="headingFour" data-bs-parent="#accordionExample">
+            <div class="accordion-body">
+              <form method="POST">
+                <div>
+             <table id="data" border="2" bgcolor="balck">
+              <thead bgcolor="lightgrey">
+
+              </thead>
+              <tbody>
+
+              </tbody>
+             </table>
+            </div>
+            <div>
+              <script>
+                try{
+                var socket = io();
+                let a=0;
+                socket.on("update_tbl", function(Data)
+                 {
+                  let headers=Data.headers;
+                  let data=Data.data;
+                  let datetime=Data.logdatetime;
+                  console.error(data)
+                  generateTable(data.length,headers,data,datetime)
+                  });
+                    function generateTable(numdata,Headers,data,datetime) 
+                    { a=a+1;
+                      let tableBody = document.querySelector("#data tbody");
+                      let tablehead=document.querySelector("#data thead")
+                      tableBody.innerHTML = ""; // Clear previous rows
+                      let tr=document.createElement("tr");
+                      let row = document.createElement("tr");
+                      if(a== 1){
+                        let th=document.createElement("th");
+                        th.textContent = "Log DateTime";
+                        th.style.border = "2px solid black";
+                        th.style.width="100px";
+                        th.style.textAlign="center"
+                        tr.appendChild(th);
+                      for(let i=0;i<numdata; i++) 
+                      {
+                         th=document.createElement("th");
+                        th.textContent = Headers[i];
+                        th.style.border = "2px solid black";
+                        th.style.width="100px";
+                        th.style.textAlign="center"
+                        tr.appendChild(th);
+                      } }
+                      tablehead.appendChild(tr);
+                      let cell = document.createElement("td");
+                      cell.textContent =datetime;
+                      cell.style.border = "2px solid black";
+                      cell.style.width="100px";
+                      cell.style.textAlign="center"
+                      row.appendChild(cell);
+                      for(let i=0;i<numdata; i++) 
+                      { 
+                        
+                        let cell1 = document.createElement("td");
+                        cell1.textContent =data[i];
+                        cell1.style.border = "2px solid black";
+                        cell1.style.width="100px";
+                        cell1.style.textAlign="center"
+                        row.appendChild(cell1);
+                        
+                      } 
+                      tablehead.appendChild(row);
+                      // for (let i = 1; i <= numRows; i++) 
+                      // {
+
+                      //   let row = document.createElement("tr"); // Create row
+                      //   let str=data[i].spilt(sep)
+                      //   let cell1 = document.createElement("td");
+                      //   cell1.textContent =str[0] ; // Row number
+                      //   let cell2 = document.createElement("td");
+                      //   cell2.textContent = str[1] // Sample name
+                      //   row.appendChild(cell1);
+                      //   row.appendChild(cell2);
+                      //   tableBody.appendChild(row); // Add row to table
+
+                      // }
+
+                    }
+                  }catch(error){
+                    console.error("Caught an error:", error);
+                  }
+            </script></div>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        
+
+    </div>
+    
+
+    <!-- Optional JavaScript; choose one of the two! -->
+
+    <!-- Option 1: Bootstrap Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+
+    <!-- Option 2: Separate Popper and Bootstrap JS -->
+    <!--
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js" integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js" integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF" crossorigin="anonymous"></script>
+    -->
+  </body>
+</html>

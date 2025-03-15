@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IMX8MP Network Config</title>
+</head>
+<body>
+    <h2>Current Ethernet IP: {{ ip }}</h2>
+
+    <form method="POST" action="/set_ip">
+        <label for="ip">Enter New IP Address:</label>
+        <input type="text" id="ip" name="ip_address" required>
+        <button type="submit">Save</button>
+    </form>
+</body>
+</html>

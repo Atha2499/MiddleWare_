@@ -1,0 +1,17 @@
+[Unit]
+Description=Startup script to set IP and run app
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/usr/local/bin/on_startup.sh
+Restart=on-failure
+RestartSec=5
+User=root
+Environment="PATH=/usr/bin:/usr/local/bin"
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
+
